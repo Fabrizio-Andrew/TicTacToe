@@ -43,7 +43,7 @@ namespace TicTacToe.Controllers
             string azureSymbol = messagePayload.AzurePlayerSymbol.ToString();
 
             // Compare victoryConditions to humanPositions.
-            // Replace any values in victoryConditions with humanSymbol if they match (indicating that the human took that space)
+            // Replace any values in victoryConditions with humanSymbol if they match (indicating that the human owns that space)
 
             foreach (int i in humanPositions)
             {
@@ -57,7 +57,7 @@ namespace TicTacToe.Controllers
                         }
                     }
 
-                    // Check to see if the human has won
+                    // Check to see if the human has met any of the victory conditions
                     if (victoryConditions[row, 0] == humanSymbol && victoryConditions[row,1] == humanSymbol && victoryConditions[row,2] == humanSymbol)
                     {
                         return "Human won.";
@@ -66,7 +66,7 @@ namespace TicTacToe.Controllers
             }
 
             // Compare victoryConditions to azurePositions.
-            // Replace any values in victoryConditions with azureSymbol if they match (indicating that Azure took that space)
+            // Replace any values in victoryConditions with azureSymbol if they match (indicating that Azure owns that space)
 
             foreach (int i in azurePositions)
             {
@@ -81,6 +81,7 @@ namespace TicTacToe.Controllers
                     }
                 }
             }
+
 
             return $"Human's Positions ({messagePayload.HumanPlayerSymbol}) = {string.Join(",",humanPositions)} ::::::: Azure's Positions ({messagePayload.AzurePlayerSymbol}) = {string.Join(",",azurePositions)}";
         }
