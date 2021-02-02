@@ -13,9 +13,9 @@ namespace TicTacToe.Controllers
     public class GameController : ControllerBase
     {
         // Defines all 8 possible winning combinations in Tic Tac Toe
-        private static readonly int[,] victoryConditions = new int[8,3]
+        private static string[,] victoryConditions = new string[8,3]
         {
-            {0, 1, 2}, {0, 3, 6}, {0, 4, 8}, {1, 4, 7}, {2, 4, 6}, {2, 5, 8}, {3, 4, 5}, {6, 7, 8}
+            {"0", "1", "2"}, {"0", "3", "6"}, {"0", "4", "8"}, {"1", "4", "7"}, {"2", "4", "6"}, {"2", "5", "8"}, {"3", "4", "5"}, {"6", "7", "8"}
         };
 
         // POST api/<GameController>
@@ -23,7 +23,7 @@ namespace TicTacToe.Controllers
         public string ExecuteMoveResponse([FromBody] ExecuteMove messagePayload)
         {
 
-            // Creates two lists: for Gameboard positions with Xs and Os
+            // Creates two lists: for Gameboard human and azure player positions
             List<int> humanPositions = new List<int>();
             List<int> azurePositions = new List<int>();
 
@@ -39,9 +39,50 @@ namespace TicTacToe.Controllers
                 }
             }
 
+            string humanSymbol = messagePayload.HumanPlayerSymbol.ToString();
+            string azureSymbol = messagePayload.AzurePlayerSymbol.ToString();
+
+            // Compare victoryConditions to humanPositions.
+            // Replace any values in victoryConditions with humanSymbol if they match (indicating that the human took that space)
+
+            foreach (int i in humanPositions)
+            {
+                for (int row = 0; row < victoryConditions.GetLength(0); row++)
+                {
+                    for (int column = 0; column < victoryConditions.GetLength(1); column++)
+                    {
+                        if (i.ToString() == victoryConditions[row, column])
+                        {
+                            victoryConditions[row, column] = humanSymbol;
+                        }
+                    }
+
+                    // Check to see if the human has won
+                    if (victoryConditions[row, 0] == humanSymbol && victoryConditions[row,1] == humanSymbol && victoryConditions[row,2] == humanSymbol)
+                    {
+                        return "Human won.";
+                    }
+                }
+            }
+
+            // Compare victoryConditions to azurePositions.
+            // Replace any values in victoryConditions with azureSymbol if they match (indicating that Azure took that space)
+
+            foreach (int i in azurePositions)
+            {
+                for (int row = 0; row < victoryConditions.GetLength(0); row++)
+                {
+                    for (int column = 0; column < victoryConditions.GetLength(1); column++)
+                    {
+                        if (i.ToString() == victoryConditions[row, column])
+                        {
+                            victoryConditions[row, column] = azureSymbol;
+                        }
+                    }
+                }
+            }
+
             return $"Human's Positions ({messagePayload.HumanPlayerSymbol}) = {string.Join(",",humanPositions)} ::::::: Azure's Positions ({messagePayload.AzurePlayerSymbol}) = {string.Join(",",azurePositions)}";
         }
-
-        // TO-DO: Go through app setup walkthrough again.  Understand why this POST method isn't working.
     }
 }
