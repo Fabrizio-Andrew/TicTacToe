@@ -15,8 +15,11 @@ namespace TicTacToe.Controllers
 
         // POST api/<GameController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string ExecuteMoveResponse([FromBody] MessagePayload messagePayload)
         {
+            return $"what is up, {messagePayload.MessageContent}?";
         }
+
+        // TO-DO: Go through app setup walkthrough again.  Understand why this POST method isn't working.
     }
 }
