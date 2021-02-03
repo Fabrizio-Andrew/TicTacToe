@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    public class ExecuteMove
+    public class ExecuteMoveResponse
     {
         public int move { get; set; }
 
@@ -13,7 +13,10 @@ namespace TicTacToe
 
         public char humanPlayerSymbol { get; set; }
 
-        public char[]  gameBoard { get; set; }
+        public char winner { get; set; }
 
+        public int[] winPositions { get; set; }
+
+        public char[] gameBoard { get; set; }
     }
 }
