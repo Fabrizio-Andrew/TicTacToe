@@ -1,5 +1,6 @@
 ﻿using TicTacToe.DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,17 @@ namespace TicTacToe.Controllers
     {
 
 
-        // POST api/<GameController>
+        // POST api/<executemoveController>
+        [ProducesResponseType(typeof(ExecuteMoveResponse), StatusCodes.Status200OK)] // Tells swagger what the response format will be for a success message
+        [ProducesResponseType(typeof(int), StatusCodes.Status400BadRequest)] // Tells swagger that the response format will be an int for a BadRequest (400)
         [HttpPost]
-        public ExecuteMoveResponse ExecuteMoveResponse([FromBody] ExecuteMove messagePayload)
+        public ActionResult<ExecuteMoveResponse> ExecuteMoveResponse([FromBody] ExecuteMove messagePayload)
         {
+            if (PayloadValidation.ValidatePayload(messagePayload) == false)
+            {
+                return BadRequest(4);
+            }
+
             ExecuteMoveResponse response = CalculateResponse.CalculateMoveResponse(messagePayload);
 
             return response;

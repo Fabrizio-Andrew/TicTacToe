@@ -147,7 +147,7 @@ namespace TicTacToe
                     response.move = blockingMove;
                     response.gameBoard[(int)blockingMove] = messagePayload.azurePlayerSymbol;
                 }
-                else
+                else  // TO DO: This is in the wrong place.  Generating two moves for Azure!!!!!
                 // If no winning or blocking moves available, select the first available move from a predetermined order of priority
                 {
 
