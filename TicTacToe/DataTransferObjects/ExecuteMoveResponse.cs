@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TicTacToe
+namespace TicTacToe.DataTransferObjects
 {
     public class ExecuteMoveResponse
     {
@@ -13,7 +13,7 @@ namespace TicTacToe
 
         public char humanPlayerSymbol { get; set; }
 
-        public char winner { get; set; }
+        public string winner { get; set; }
 
         public int[] winPositions { get; set; }
 

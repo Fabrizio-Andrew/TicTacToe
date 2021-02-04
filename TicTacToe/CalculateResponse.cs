@@ -1,4 +1,5 @@
-﻿using System;
+﻿using TicTacToe.DataTransferObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,13 +7,11 @@ using System.Threading.Tasks;
 namespace TicTacToe
 {
     public class CalculateResponse
+    // Contains all business logic for the game of Tic Tac Toe
     {
-        //public static int[] FindAllIndexof<T>(this IEnumerable<T> values, T val)
-        //{
-        //    return values.Select((b, i) => object.Equals(b, val) ? i : -1).Where(i => i != -1).ToArray();
-        //}
 
-        public static string CalculateMoveResponse(ExecuteMove messagePayload)
+        public static ExecuteMoveResponse CalculateMoveResponse(ExecuteMove messagePayload)
+        // Calculates
         {
 
 
@@ -37,7 +36,7 @@ namespace TicTacToe
             {
                azurePlayerSymbol = messagePayload.azurePlayerSymbol,
                humanPlayerSymbol = messagePayload.humanPlayerSymbol,
-                gameBoard = messagePayload.gameBoard
+               gameBoard = messagePayload.gameBoard
             };
 
 
@@ -57,13 +56,10 @@ namespace TicTacToe
                 }
             }
 
-            string humanSymbol = messagePayload.humanPlayerSymbol.ToString();
-            string azureSymbol = messagePayload.azurePlayerSymbol.ToString();
-
-            // Create a copy of victoryConditions (gameState) which will be used to track game progress towards possible victories
-
             // Compare gameState to humanPositions.
             // Replace any values in gameState with humanSymbol if they match (indicating that the human owns that space)
+            string humanSymbol = messagePayload.humanPlayerSymbol.ToString();
+
             foreach (int i in humanPositions)
             {
                 for (int row = 0; row < gameState.GetLength(0); row++)
@@ -79,28 +75,32 @@ namespace TicTacToe
                     // Check to see if the human has met any of the victory conditions
                     if (gameState[row, 0] == humanSymbol && gameState[row, 1] == humanSymbol && gameState[row, 2] == humanSymbol)
                     {
-                        response.winner = messagePayload.humanPlayerSymbol;
+                        response.winner = humanSymbol;
 
                         // Set winPositions
+                        response.winPositions = new int[3];
                         for (int j = 0; j < 3; j++)
                         {
                             response.winPositions[j] = victoryConditions[row, j];
                         }
 
-                        return response.ToString();
+                        return response;
                     }
                 }
             }
 
-            // Check for a tie game
+            // Check for a tie game resulting from Player's move
             if (Array.IndexOf(messagePayload.gameBoard, '?') == -1)
             {
-                return "Tie game.";
+                response.winner = "tie";
+                return response;
             }
 
 
             // Compare gameState to azurePositions.
             // Replace any values in gameState with azureSymbol if they match (indicating that Azure owns that space)
+            string azureSymbol = messagePayload.azurePlayerSymbol.ToString();
+
             foreach (int i in azurePositions)
             {
                 for (int row = 0; row < gameState.GetLength(0); row++)
@@ -118,58 +118,69 @@ namespace TicTacToe
             //========== 2. CALCULATE AZURE'S MOVE ==========
             // This section calculate's Azure's next move and checks if that move results in a win or tie.
 
-            // Looks for any possible winning moves
+            // Look for any possible winning moves or blocking moves
             for (int row = 0; row < gameState.GetLength(0); row++)
             {
-
-                // Create a sub-array of gameState for each row
                 string[] gameStateRow = { gameState[row, 0], gameState[row, 1], gameState[row, 2] };
 
-                int winningMove = WinBlock(gameStateRow, azureSymbol, humanSymbol);
+                // Winning moves
+                int? winningMove = WinBlock(gameStateRow, azureSymbol, humanSymbol);
 
-                if (winningMove < 9)
+                if (winningMove != null)
                 {
-                    // Azure Wins
                     response.move = winningMove;
-                    response.gameBoard[winningMove] = messagePayload.azurePlayerSymbol;
-                    response.winner = messagePayload.azurePlayerSymbol;
-                    //response.winPositions[0] = victoryConditions[row, 0];
-                    //response.winPositions[1] = victoryConditions[row, 1];
-                    //response.winPositions[2] = victoryConditions[row, 2];
-                    break;
+                    response.gameBoard[(int)winningMove] = messagePayload.azurePlayerSymbol;
+                    response.winner = azureSymbol;
+                    response.winPositions = new int[3];
+                    for (int j = 0; j < 3; j++)
+                    {
+                        response.winPositions[j] = victoryConditions[row, j];
+                    }
+                    return response;
                 }
 
-                int blockingMove = WinBlock(gameStateRow, humanSymbol, azureSymbol);
+                // Blocking moves
+                int? blockingMove = WinBlock(gameStateRow, humanSymbol, azureSymbol);
 
-                if (blockingMove < 9)
+                if (blockingMove != null)
                 {
-                    // Azure blocks
                     response.move = blockingMove;
+                    response.gameBoard[(int)blockingMove] = messagePayload.azurePlayerSymbol;
                 }
+                else
+                // If no winning or blocking moves available, select the first available move from a predetermined order of priority
+                {
 
+                    int[] movePriority = { 4, 8, 6, 2, 0, 7, 5, 3, 1 };
+                    List<int> occupiedPositions = humanPositions.Concat(azurePositions).ToList();
+
+                    for (int i = 0; i < movePriority.Length; i++)
+                    {
+                        if (occupiedPositions.IndexOf(movePriority[i]) == -1)
+                        {
+                            response.move = movePriority[i];
+                            response.gameBoard[movePriority[i]] = messagePayload.azurePlayerSymbol;
+                            break;
+                        }
+                    }
+                }
             }
 
-            return response.ToString();
-
-
-
-            // Always play the center square if it is available
-            if (messagePayload.gameBoard[4] == '?')
+            // Check for a tie game resulting from Azure's move
+            if (Array.IndexOf(messagePayload.gameBoard, '?') == -1)
             {
-
-                response.move = 4;
+                response.winner = "tie";
+                return response;
             }
 
-
-
-
-
-
-            return $"Human's Positions ({messagePayload.humanPlayerSymbol}) = {string.Join(",", humanPositions)} ::::::: Azure's Positions ({messagePayload.azurePlayerSymbol}) = {string.Join(",", azurePositions)}";
+            response.winner = "inconclusive";
+            return response;
         }
 
-        // The WinBlock method finds any victory condition where 2/3 squares are taken and the third is open
-        public static int WinBlock(string[] winCondition, string firstSymbol, string secondSymbol)
+        public static int? WinBlock(string[] winCondition, string firstSymbol, string secondSymbol)
+        // The WinBlock method finds any victory condition where 2/3 squares are taken by the same player and the third is open.
+        // If no such situation exists, returns null.
+
         {
             if (winCondition[0] == firstSymbol && winCondition[1] == firstSymbol && winCondition[2] != secondSymbol)
             {
@@ -185,9 +196,8 @@ namespace TicTacToe
             }
             else
             {
-                return 99;
+                return null;
             }
-
         }
     }
 }

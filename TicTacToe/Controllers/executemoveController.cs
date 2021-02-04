@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using TicTacToe.DataTransferObjects;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,9 @@ namespace TicTacToe.Controllers
 
         // POST api/<GameController>
         [HttpPost]
-        public string ExecuteMoveResponse([FromBody] ExecuteMove messagePayload)
+        public ExecuteMoveResponse ExecuteMoveResponse([FromBody] ExecuteMove messagePayload)
         {
-            string response = CalculateResponse.CalculateMoveResponse(messagePayload);
+            ExecuteMoveResponse response = CalculateResponse.CalculateMoveResponse(messagePayload);
 
             return response;
 
