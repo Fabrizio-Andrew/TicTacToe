@@ -15,10 +15,17 @@ namespace TicTacToe
         public static string CalculateMoveResponse(ExecuteMove messagePayload)
         {
 
-            // Defines all 8 possible winning combinations in Tic Tac Toe
+
             int[,] victoryConditions = new int[8, 3]
+            // Defines all 8 possible winning combinations in Tic Tac Toe
             {
                 {0, 1, 2}, {0, 3, 6}, {0, 4, 8}, {1, 4, 7}, {2, 4, 6}, {2, 5, 8}, {3, 4, 5}, {6, 7, 8}
+            };
+
+            string[,] gameState = new string[8,3]
+            // Tracks player positions against possible victories
+            {
+                {"0", "1", "2"}, {"0", "3", "6"}, {"0", "4", "8"}, {"1", "4", "7"}, {"2", "4", "6"}, {"2", "5", "8"}, {"3", "4", "5"}, {"6", "7", "8"}
             };
 
             //========== 1. SET UP THE GAME BOARD ==========
@@ -26,10 +33,13 @@ namespace TicTacToe
             // (We can assume Azure has not won before making its move.)
 
             // Prepare known elements of Azure's response
-            ExecuteMoveResponse response = new ExecuteMoveResponse { };
-            response.azurePlayerSymbol = messagePayload.azurePlayerSymbol;
-            response.humanPlayerSymbol = messagePayload.humanPlayerSymbol;
-            response.gameBoard = messagePayload.gameBoard;
+            ExecuteMoveResponse response = new ExecuteMoveResponse()
+            {
+               azurePlayerSymbol = messagePayload.azurePlayerSymbol,
+               humanPlayerSymbol = messagePayload.humanPlayerSymbol,
+                gameBoard = messagePayload.gameBoard
+            };
+
 
             // Creates two lists: for gameBoard human and azure player positions
             List<int> humanPositions = new List<int>();
@@ -51,8 +61,6 @@ namespace TicTacToe
             string azureSymbol = messagePayload.azurePlayerSymbol.ToString();
 
             // Create a copy of victoryConditions (gameState) which will be used to track game progress towards possible victories
-            string[,] gameState = (string[,])victoryConditions.Clone();
-
 
             // Compare gameState to humanPositions.
             // Replace any values in gameState with humanSymbol if they match (indicating that the human owns that space)
@@ -110,12 +118,40 @@ namespace TicTacToe
             //========== 2. CALCULATE AZURE'S MOVE ==========
             // This section calculate's Azure's next move and checks if that move results in a win or tie.
 
+            // Looks for any possible winning moves
             for (int row = 0; row < gameState.GetLength(0); row++)
             {
-                WinBlock(gameState[row], azureSymbol, humanSymbol);
 
+                // Create a sub-array of gameState for each row
+                string[] gameStateRow = { gameState[row, 0], gameState[row, 1], gameState[row, 2] };
+
+                int winningMove = WinBlock(gameStateRow, azureSymbol, humanSymbol);
+
+                if (winningMove < 9)
+                {
+                    // Azure Wins
+                    response.move = winningMove;
+                    response.gameBoard[winningMove] = messagePayload.azurePlayerSymbol;
+                    response.winner = messagePayload.azurePlayerSymbol;
+                    //response.winPositions[0] = victoryConditions[row, 0];
+                    //response.winPositions[1] = victoryConditions[row, 1];
+                    //response.winPositions[2] = victoryConditions[row, 2];
+                    break;
+                }
+
+                int blockingMove = WinBlock(gameStateRow, humanSymbol, azureSymbol);
+
+                if (blockingMove < 9)
+                {
+                    // Azure blocks
+                    response.move = blockingMove;
+                }
 
             }
+
+            return response.ToString();
+
+
 
             // Always play the center square if it is available
             if (messagePayload.gameBoard[4] == '?')
@@ -132,6 +168,7 @@ namespace TicTacToe
             return $"Human's Positions ({messagePayload.humanPlayerSymbol}) = {string.Join(",", humanPositions)} ::::::: Azure's Positions ({messagePayload.azurePlayerSymbol}) = {string.Join(",", azurePositions)}";
         }
 
+        // The WinBlock method finds any victory condition where 2/3 squares are taken and the third is open
         public static int WinBlock(string[] winCondition, string firstSymbol, string secondSymbol)
         {
             if (winCondition[0] == firstSymbol && winCondition[1] == firstSymbol && winCondition[2] != secondSymbol)
