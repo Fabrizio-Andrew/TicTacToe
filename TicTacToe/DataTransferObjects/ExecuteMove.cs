@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace TicTacToe.DataTransferObjects
 {
+    /// <summary>
+    /// Defines the message payload representing the player's move.
+    /// </summary>
     public class ExecuteMove
     {
         public int? move { get; set; }
