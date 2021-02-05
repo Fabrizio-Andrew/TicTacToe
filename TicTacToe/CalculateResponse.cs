@@ -21,7 +21,7 @@ namespace TicTacToe
                 {0, 1, 2}, {0, 3, 6}, {0, 4, 8}, {1, 4, 7}, {2, 4, 6}, {2, 5, 8}, {3, 4, 5}, {6, 7, 8}
             };
 
-            string[,] gameState = new string[8,3]
+            string[,] gameState = new string[8, 3]
             // Tracks player positions against possible victories
             {
                 {"0", "1", "2"}, {"0", "3", "6"}, {"0", "4", "8"}, {"1", "4", "7"}, {"2", "4", "6"}, {"2", "5", "8"}, {"3", "4", "5"}, {"6", "7", "8"}
@@ -34,9 +34,9 @@ namespace TicTacToe
             // Prepare known elements of Azure's response
             ExecuteMoveResponse response = new ExecuteMoveResponse()
             {
-               azurePlayerSymbol = messagePayload.azurePlayerSymbol,
-               humanPlayerSymbol = messagePayload.humanPlayerSymbol,
-               gameBoard = messagePayload.gameBoard
+                azurePlayerSymbol = messagePayload.azurePlayerSymbol,
+                humanPlayerSymbol = messagePayload.humanPlayerSymbol,
+                gameBoard = messagePayload.gameBoard
             };
 
 
@@ -147,24 +147,26 @@ namespace TicTacToe
                     response.move = blockingMove;
                     response.gameBoard[(int)blockingMove] = messagePayload.azurePlayerSymbol;
                 }
-                else  // TO DO: This is in the wrong place.  Generating two moves for Azure!!!!!
-                // If no winning or blocking moves available, select the first available move from a predetermined order of priority
+            }
+            
+            // If no winning or blocking moves have been found, select the first available move from a predetermined order of priority
+            if (response.move == null)
+            {
+                int[] movePriority = { 4, 8, 6, 2, 0, 7, 5, 3, 1 };
+                List<int> occupiedPositions = humanPositions.Concat(azurePositions).ToList();
+
+                for (int i = 0; i < movePriority.Length; i++)
                 {
-
-                    int[] movePriority = { 4, 8, 6, 2, 0, 7, 5, 3, 1 };
-                    List<int> occupiedPositions = humanPositions.Concat(azurePositions).ToList();
-
-                    for (int i = 0; i < movePriority.Length; i++)
+                    if (occupiedPositions.IndexOf(movePriority[i]) == -1)
                     {
-                        if (occupiedPositions.IndexOf(movePriority[i]) == -1)
-                        {
-                            response.move = movePriority[i];
-                            response.gameBoard[movePriority[i]] = messagePayload.azurePlayerSymbol;
-                            break;
-                        }
+                        response.move = movePriority[i];
+                        response.gameBoard[movePriority[i]] = messagePayload.azurePlayerSymbol;
+                        break;
                     }
                 }
             }
+        
+            
 
             // Check for a tie game resulting from Azure's move
             if (Array.IndexOf(messagePayload.gameBoard, '?') == -1)
