@@ -28,6 +28,7 @@ namespace FunctionalTestProject
 
         [TestMethod]
         public async Task HappyPathTestAsync()
+        // Validate that the application is providing a valid response to a properly-formatted request.
         {
             // Arrange 
             ExecuteMove payload = new ExecuteMove()
@@ -40,18 +41,16 @@ namespace FunctionalTestProject
 
             // Act
             HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
-            ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
 
             // Assert
-            if (resultPayload != null)
+            if (resultObject != null)
             {
                 Assert.AreEqual(StatusCodes.Status200OK, (int)resultObject.Response.StatusCode);
 
-                Assert.AreEqual(resultPayload.Move, 4);
-                Assert.AreEqual(resultPayload.GameBoard.Count, 9);
-                Assert.AreEqual(resultPayload.GameBoard[4], "X");
-                Assert.AreEqual(resultPayload.Winner, "inconclusive");
-                Assert.AreEqual(resultPayload.WinPositions, null);
+                //Assert.AreEqual(resultPayload.Move, 4);
+                //Assert.AreEqual(resultPayload.GameBoard[4], "X");
+                //Assert.AreEqual(resultPayload.Winner, "inconclusive");
+                //Assert.AreEqual(resultPayload.WinPositions, null);
 
             }
             else
@@ -61,7 +60,129 @@ namespace FunctionalTestProject
         }
 
         [TestMethod]
-        public async Task PlayerSymbolsTestAsync()
+        public async Task XPlayerWinTestAsync()
+        // Validate that the application properly detects a human player "O" victory
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 1,
+                AzurePlayerSymbol = "O",
+                HumanPlayerSymbol = "X",
+                GameBoard = new List<string> { "O", "X", "O", "?", "X", "?", "?", "X", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+            ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(resultPayload.Winner, "X");
+
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task OPlayerWinTestAsync()
+        // Validate that the application properly detects a human player "O" victory
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 1,
+                AzurePlayerSymbol = "X",
+                HumanPlayerSymbol = "O",
+                GameBoard = new List<string> { "X", "O", "X", "?", "O", "?", "?", "O", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+            ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(resultPayload.Winner, "O");
+
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task TieTestAsync()
+        // Validate that the application properly detects a tie
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 1,
+                AzurePlayerSymbol = "X",
+                HumanPlayerSymbol = "O",
+                GameBoard = new List<string> { "X", "O", "X", "O", "O", "X", "O", "X", "O" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+            ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(resultPayload.Winner, "tie");
+
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task InconclusiveTestAsync()
+        // Validate that the application properly detects an inconclusive move - indicating that the game should continue
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 1,
+                AzurePlayerSymbol = "X",
+                HumanPlayerSymbol = "O",
+                GameBoard = new List<string> { "X", "O", "X", "O", "?", "?", "?", "?", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+            ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(resultPayload.Winner, "inconclusive");
+
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task ValidResponseTestAsync()
+        // Validates that the ExecuteMove Response is properly formatted 
+        // Validate that the Azure and Human player symbols are either "X" or "O" and are not the same.
         {
             // Arrange 
             ExecuteMove payload = new ExecuteMove()
@@ -77,87 +198,146 @@ namespace FunctionalTestProject
             ExecuteMoveResponse resultPayload = resultObject.Body as ExecuteMoveResponse;
 
             // Assert
-            if (resultPayload != null)
+            if (resultObject != null)
             {
+                // Validate that the Azure and Human player symbols are either "X" or "O" and are not the same.
+                Assert.IsTrue(resultPayload.AzurePlayerSymbol == "O" || resultPayload.AzurePlayerSymbol == "X");
+                Assert.IsTrue(resultPayload.HumanPlayerSymbol == "O" || resultPayload.HumanPlayerSymbol == "X");
                 Assert.AreNotEqual(resultPayload.AzurePlayerSymbol, resultPayload.HumanPlayerSymbol);
-                Assert.AreEqual(resultPayload.AzurePlayerSymbol, "O");
-                Assert.AreEqual(resultPayload.HumanPlayerSymbol, "X");
+
+                // Validate that the gameBoard is the proper size and all values are 'X', 'O', or '?'
+                Assert.AreEqual(resultPayload.GameBoard.Count, 9);
+
+                for (int i = 0; i < resultPayload.GameBoard.Count; i++)
+                    Assert.IsTrue(resultPayload.GameBoard[i] == "X" || resultPayload.GameBoard[i] == "O" || resultPayload.GameBoard[i] == "?");
             }
             else
             {
                 Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
             }
         }
+
+
+        [TestMethod]
+        public async Task BadGameBoardSizeTestAsync()
+        // Validate that the application returns a 400 error when the GameBoard length is not 9.
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 2,
+                AzurePlayerSymbol = "O",
+                HumanPlayerSymbol = "X",
+                GameBoard = new List<string> { "X", "O", "X", "O", "?", "?", "?", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(StatusCodes.Status400BadRequest, (int)resultObject.Response.StatusCode);
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task BadGameBoardCharTestAsync()
+        // Validate that the application returns a 400 error when a character other than X, O, or ? are entered on the GameBoard.
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 2,
+                AzurePlayerSymbol = "O",
+                HumanPlayerSymbol = "X",
+                GameBoard = new List<string> { "X", "O", "X", "O", "?", "?", "?", "?", "A"}
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+
+            // Assert
+            if (resultObject != null)
+            {
+                Assert.AreEqual(StatusCodes.Status400BadRequest, (int)resultObject.Response.StatusCode);
+            }
+            else
+            {
+                Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+            }
+        }
+
+        [TestMethod]
+        public async Task PositionCountTestAsync()
+        // Validate that the application returns a 400 error if the difference between the HumanPlayer's positions and Azure Player's Positions is greater than 1.
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 2,
+                AzurePlayerSymbol = "O",
+                HumanPlayerSymbol = "X",
+                GameBoard = new List<string> { "X", "O", "X", "X", "?", "?", "?", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                // Assert
+                if (resultObject != null)
+                {
+                    Assert.AreEqual(StatusCodes.Status400BadRequest, (int)resultObject.Response.StatusCode);
+                }
+                else
+                {
+                    Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task HumanMoveTestAsync()
+        // Validate that the application returns a 400 error if the human player's move is not represented on the gameBoard.
+        {
+            // Arrange 
+            ExecuteMove payload = new ExecuteMove()
+            {
+                Move = 8,
+                AzurePlayerSymbol = "O",
+                HumanPlayerSymbol = "X",
+                GameBoard = new List<string> { "X", "O", "X", "?", "?", "?", "?", "?" }
+            };
+
+            // Act
+            HttpOperationResponse<object> resultObject = await _client.ExecuteMoveResponseWithHttpMessagesAsync(payload);
+
+
+            // Assert
+            if (resultObject != null)
+            {
+                // Assert
+                if (resultObject != null)
+                {
+                    Assert.AreEqual(StatusCodes.Status400BadRequest, (int)resultObject.Response.StatusCode);
+                }
+                else
+                {
+                    Assert.Fail("Expected an ExecuteMoveResponse but didn't recieve one.");
+                }
+            }
+        }
     }
 }
 
-// Validate that symbols are 'X' or 'O' and are different
-//if (messagePayload.humanPlayerSymbol != 'X' && messagePayload.humanPlayerSymbol != 'O')
-//{
-//    return false;
-//}
-
-//if (messagePayload.azurePlayerSymbol != 'X' && messagePayload.azurePlayerSymbol != 'O')
-//{
-//   return false;
-//}
-
-//if (messagePayload.azurePlayerSymbol == messagePayload.humanPlayerSymbol)
-//{
-//return false;
-//}
-
-// Validate that the gameBoard is the proper size and all values are 'X', 'O', or '?'
-//if (messagePayload.gameBoard.Length > 9 || messagePayload.gameBoard.Length < 9)
-//{
-//return false;
-//}
-
-//for (int i = 0; i < messagePayload.gameBoard.Length; i++)
-//{
-//if (messagePayload.gameBoard[i] != 'X' && messagePayload.gameBoard[i] != 'O' && messagePayload.gameBoard[i] != '?')
-//{
-//return false;
-//    }
-//}
 
 
-// Validate that the difference between the number of X's and O's is not greater than 1
-//int xCount = 0;
-//int oCount = 0;
 
-//for (int i = 0; i < messagePayload.gameBoard.Length; i++)
-//{
-//if (messagePayload.gameBoard[i] == 'X')
-//{
-//xCount++;
-//    }
-//else if (messagePayload.gameBoard[i] == 'O')
-//{
-//oCount++;
-//   }
-//}
-//if ((xCount - oCount) > 1 || (xCount - oCount) < -1)
-//{
-//return false;
-//}
-
-
-// Validate that the player's move is represented on the gameBoard.  If the player did not move, gameBoard must be all ?'s.
-//if (messagePayload.move == null)
-//{
-//for (int i = 0; i < messagePayload.gameBoard.Length; i++)
-//{
-//if (messagePayload.gameBoard[i] != '?')
-//{
-//return false;
-//       }
-//    }
-//}
-//else
-//{
-//if (messagePayload.gameBoard[(int)messagePayload.move] != messagePayload.humanPlayerSymbol)
-//{
-//return false;
-//    }
-//}

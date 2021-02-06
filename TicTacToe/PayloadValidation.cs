@@ -42,25 +42,21 @@ namespace TicTacToe
 
 
             // Validate that the difference between the number of X's and O's is not greater than 1
-            int xCount = 0;
-            int oCount = 0;
+            int humanCount = 0;
+            int azureCount = 0;
 
             for (int i = 0; i < messagePayload.gameBoard.Length; i++)
             {
-                if (messagePayload.gameBoard[i] == 'X')
+                if (messagePayload.gameBoard[i] == messagePayload.humanPlayerSymbol)
                 {
-                    xCount++;
+                    humanCount++;
                 }
-                else if (messagePayload.gameBoard[i] == 'O')
+                else if (messagePayload.gameBoard[i] == messagePayload.azurePlayerSymbol)
                 {
-                    oCount++;
+                    azureCount++;
                 }
             }
-            if ((xCount - oCount) > 1 || (xCount - oCount) < -1)
-            {
-                return false;
-            }
-            
+
 
             // Validate that the player's move is represented on the gameBoard.  If the player did not move, gameBoard must be all ?'s.
             if (messagePayload.move == null)
