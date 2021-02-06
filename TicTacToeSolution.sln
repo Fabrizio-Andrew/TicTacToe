@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToe", "TicTacToe\TicTacToe.csproj", "{C9A21046-18B3-4A7A-BCB1-879E1D8694D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClientSDKLibrary", "RestClientSDKLibrary\RestClientSDKLibrary.csproj", "{E43589E5-FFB2-4C89-8F78-646F722A1CFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestClientSDKLibrary", "RestClientSDKLibrary\RestClientSDKLibrary.csproj", "{E43589E5-FFB2-4C89-8F78-646F722A1CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTestProject", "FunctionalTestProject\FunctionalTestProject.csproj", "{57D7DAD1-3597-48D9-BCEB-87652DF5C076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionalTestProject", "FunctionalTestProject\FunctionalTestProject.csproj", "{57D7DAD1-3597-48D9-BCEB-87652DF5C076}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
