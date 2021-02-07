@@ -1,15 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     const boardPositions = document.querySelectorAll(".box");
-    console.log(boardPositions);
     for (i = 0; i < boardPositions.length; i++) {
         const box = boardPositions[i];
         box.onclick = () => PlayerMove(box);
-        console.log(box);
     }
 })
 
+let azureThinking = false;
+
 function PlayerMove(box) {
-    console.log(box.id);
-    box.innerHTML = 'X';
-    box.style.animationPlayState = "running";
+    
+    if (azureThinking != true) {
+        box.setAttribute("value", "X");
+        box.innerHTML = 'X';
+        box.style.animationPlayState = "running";
+        azureThinking = true;
+        // Fetch goes here
+        azureThinking = false;
+    }
 }
