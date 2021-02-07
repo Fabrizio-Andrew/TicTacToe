@@ -30,6 +30,21 @@
     }
 }
 
+@keyframes gameboard-open {
+    
+    0% {
+        height: 0px;
+        width: 5px;
+    }
+    50% {
+        height: 450px;
+        width: 2px;
+    }
+    100% {
+        width: 450px;
+    }
+}
+
 .background {
     height: 625px;
     background-image: url('Tron-Wallpaper.jpg');
@@ -42,7 +57,11 @@
     height: 450px;
     margin: auto;
     display: grid;
-    grid-template: repeat(3, 1fr) / repeat(3 ,  1fr)
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    animation-name: gameboard-open;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
 }
 
 .box {
