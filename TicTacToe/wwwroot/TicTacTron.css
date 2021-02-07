@@ -1,0 +1,51 @@
+@keyframes user-move {
+    
+    1% {
+        background-color: blue;
+        border-color: blue;
+
+    }
+    100% {
+        background-color: black;
+        border-color: black;
+    }
+
+}
+
+.background {
+    height: 625px;
+    background-image: url('Tron-Wallpaper.jpg');
+    background-size: cover;
+    padding-top: 175px;
+}
+
+.board {
+    width: 450px;
+    height: 450px;
+    margin: auto;
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3 ,  1fr)
+}
+
+.box {
+    border: 2px solid #61ddf3;
+    border-radius: 10px;
+    background-color: black;
+    font-family: arial;
+    font-size: 30px;
+    font-weight: bold;
+    font-size: 4em;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    animation-name: user-move;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+.box:hover {
+    background-color: skyblue;
+}
