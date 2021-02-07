@@ -52,11 +52,17 @@
     padding-top: 175px;
 }
 
+#start-logo {
+    width: 450px;
+    display: block;
+    margin: auto;
+}
+
 .board {
     width: 450px;
     height: 450px;
     margin: auto;
-    display: grid;
+    display: none;
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
     animation-name: gameboard-open;
     animation-duration: 1s;
