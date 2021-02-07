@@ -3,13 +3,31 @@
     1% {
         background-color: blue;
         border-color: blue;
-
+    }
+    30%{
+        background-color: blue;
+        border-color: blue;
     }
     100% {
         background-color: black;
         border-color: black;
     }
+}
 
+@keyframes azure-move {
+    
+    1% {
+        background-color: red;
+        border-color: red;
+    }
+    30%{
+        background-color: red;
+        border-color: red;
+    }
+    100% {
+        background-color: black;
+        border-color: black;
+    }
 }
 
 .background {
