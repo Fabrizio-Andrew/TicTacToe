@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(selectBox.id);
         selectBox.onclick = () => SymbolSelect(selectBox.getAttribute('data-value'));
     }
+
+    document.getElementById('music').volume = 0.5;
+    document.getElementById('music').play();
 })
 
 // API Endpoint
