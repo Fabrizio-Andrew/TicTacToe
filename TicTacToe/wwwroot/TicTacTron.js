@@ -29,6 +29,7 @@ function PlayerMove(playerPosition) {
         playerPosition.setAttribute('data-value', humanSymbol);
         playerPosition.innerHTML = humanSymbol;
         playerPosition.style.animationPlayState = "running";
+        document.getElementById('playermove-audio').play();
         playerPosition.onclick = null;
         azureThinking = true;
 
@@ -56,13 +57,11 @@ function PlayerMove(playerPosition) {
                 ]
             })
         })
-            .then(response => response.json())
-            .then(result => {
-                console.log(result);
-                setTimeout(() => AzureMove(result), 1500);
-
-
-            });
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            setTimeout(() => AzureMove(result), 1500);
+        });
     }
 }
 
@@ -77,6 +76,7 @@ function AzureMove(response) {
         azurePosition.style.color = 'red';
         azurePosition.style.animationName = 'azure-move';
         azurePosition.style.animationPlayState = 'running';
+        document.getElementById('azuremove-audio').play();
         azurePosition.innerHTML = azureSymbol;
 
         if (response.winner == azureSymbol) {
@@ -94,7 +94,6 @@ function AzureMove(response) {
     else {
         document.getElementById('game-over').innerHTML = '<p>Tie.</p>';
     }
-
 }
 
 function SymbolSelect(symbol) {
@@ -105,19 +104,18 @@ function SymbolSelect(symbol) {
     if (symbol == 'X') {
         document.getElementById('select-box-O').style.display = 'none';
         azureSymbol = 'O';
-        console.log('XXX');
     } else if (symbol == 'O') {
         document.getElementById('select-box-X').style.display = 'none';
         azureSymbol = 'X';
-        console.log('XXX');
-
     }
 
     document.getElementById('symbol-container').style.animationPlayState = 'running';
+    document.getElementById('gamestart-audio').play();
+
     setTimeout(() => {
         document.getElementById('start').style.display = 'none';
         board = document.getElementById('board');
         board.style.display = 'grid';
         board.style.animationPlayState = 'running';
-    }, 2000);
+    }, 4000);
 }

@@ -36,7 +36,11 @@
         height: 0px;
         width: 5px;
     }
-    50% {
+    40% {
+        height: 450px;
+        width: 2px;
+    }
+    60% {
         height: 450px;
         width: 2px;
     }
@@ -88,7 +92,7 @@ p {
     display: none;
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
     animation-name: gameboard-open;
-    animation-duration: 1s;
+    animation-duration: 4s;
     animation-fill-mode: forwards;
     animation-play-state: running;
 }
@@ -149,7 +153,7 @@ p {
 #symbol-container {
     margin: auto;
     animation-name: symbol-select;
-    animation-duration: 1s;
+    animation-duration: 4s;
     animation-fill-mode: forwards;
     animation-play-state: paused;
 }
