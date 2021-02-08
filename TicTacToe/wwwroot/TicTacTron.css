@@ -51,6 +51,7 @@
 }
 
 @keyframes symbol-select {
+
     0%{
         width: 450px;
     }
@@ -135,7 +136,6 @@ p {
     justify-content: center;
     align-items: center;
     margin-top: 40px;
-
 }
 
 .select-box:hover {
