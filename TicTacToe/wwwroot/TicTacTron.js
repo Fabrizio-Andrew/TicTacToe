@@ -4,12 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const box = boardPositions[i];
         box.onclick = () => PlayerMove(box);
     }
+    const selectBoxes = document.querySelectorAll(".select-box");
+    for (i = 0; i < selectBoxes.length; i++) {
+        const selectBox = selectBoxes[i];
+        console.log(selectBox.id);
+        selectBox.onclick = () => SymbolSelect(selectBox.getAttribute('data-value'));
+    }
 })
 
+// API Endpoint
+let URI = "https://localhost:5001/api/executemove";
+
 // Global Variables
-let humanSymbol = "X";
-let azureSymbol = "O";
-let URL = "https://localhost:5001/api/executemove";
+let humanSymbol = "?";
+let azureSymbol = "?";
+
 
 // Prevents user from submitting another move before azure has responded.
 let azureThinking = false;
@@ -24,7 +33,7 @@ function PlayerMove(playerPosition) {
         azureThinking = true;
 
         // Post user's move to API and handle response
-        fetch(URL, {
+        fetch(URI, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -88,4 +97,29 @@ function AzureMove(response) {
         console.log(`Tie.`);
     }
 
+}
+
+function SymbolSelect(symbol) {
+
+    humanSymbol = symbol;
+    console.log(symbol);
+
+    if (symbol == 'X') {
+        document.getElementById('select-box-O').style.display = 'none';
+        azureSymbol = 'O';
+        console.log('XXX');
+    } else if (symbol == 'O') {
+        document.getElementById('select-box-X').style.display = 'none';
+        azureSymbol = 'X';
+        console.log('XXX');
+
+    }
+
+    document.getElementById('symbol-container').style.animationPlayState = 'running';
+    setTimeout(() => {
+        document.getElementById('start').style.display = 'none';
+        board = document.getElementById('board');
+        board.style.display = 'grid';
+        board.style.animationPlayState = 'running';
+    }, 2000);
 }
