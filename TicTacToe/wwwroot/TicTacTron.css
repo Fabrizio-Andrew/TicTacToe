@@ -58,7 +58,7 @@
 
 .background {
     height: 625px;
-    background-image: url('Tron-Wallpaper.jpg');
+    background-image: url('/MediaFiles/Tron-Wallpaper.jpg');
     background-size: cover;
     padding-top: 175px;
 }
