@@ -80,21 +80,19 @@ function AzureMove(response) {
         azurePosition.innerHTML = azureSymbol;
 
         if (response.winner == azureSymbol) {
-            console.log(`winner: ${azureSymbol}`);
-
+            document.getElementById('game-over').innerHTML = '<p>You lose.  End of Line.</p>';
         } else if (response.winner == 'tie') {
-            console.log('Tie.')
-
+            document.getElementById('game-over').innerHTML = '<p>Tie.</p>';
         } else {
             azureThinking = false;
         }
     }
     else if (response.winner == humanSymbol) {
-        console.log(`winner: ${humanSymbol}`);
+        document.getElementById('game-over').innerHTML = '<p>You win.  End of Line.</p>';
     }
 
     else {
-        console.log(`Tie.`);
+        document.getElementById('game-over').innerHTML = '<p>Tie.</p>';
     }
 
 }
