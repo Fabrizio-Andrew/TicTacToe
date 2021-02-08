@@ -45,6 +45,16 @@
     }
 }
 
+@keyframes symbol-select {
+    0%{
+        width: 450px;
+    }
+    100% {
+        width: 130px
+    }
+
+}
+
 .background {
     height: 625px;
     background-image: url('Tron-Wallpaper.jpg');
@@ -52,10 +62,22 @@
     padding-top: 175px;
 }
 
-#start-logo {
+.start {
     width: 450px;
+    height: 450px;
     display: block;
     margin: auto;
+}
+
+img {
+    width: 450px;
+}
+
+p {
+    color: lime;
+    font-family: 'Courier New';
+    text-align: center;
+    margin-top: 20px;
 }
 
 .board {
@@ -91,4 +113,42 @@
 
 .box:hover {
     background-color: skyblue;
+}
+
+.select-box {
+    height: 130px;
+    width: 130px;    
+    border: 2px solid #61ddf3;
+    border-radius: 10px;
+    background-color: black;
+    font-family: arial;
+    font-size: 30px;
+    font-weight: bold;
+    font-size: 4em;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+
+}
+
+.select-box:hover {
+    background-color: skyblue;
+}
+
+#select-box-X {
+    float: left;
+}
+
+#select-box-O {
+    float: right;
+}
+
+#symbol-container {
+    margin: auto;
+    animation-name: symbol-select;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
 }
